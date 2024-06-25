@@ -2,7 +2,7 @@ import React, { createContext, useEffect, useState } from "react";
 
 export const ShopContext = createContext(null);
 
-export const backend_url = "https://emarat-seven.vercel.app";
+export const backend_url = "https://eemarat-backend.vercel.app";
 const getDefaultCart = () => {
   let cart = {};
   for (let index = 0; index < 300 + 1; index++) {
