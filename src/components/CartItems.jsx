@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { TbTrash } from "react-icons/tb";
-
+import { Link } from 'react-router-dom'
 const CartItems = () => {
   const {
     all_products,
@@ -85,7 +85,9 @@ const CartItems = () => {
                 <h4 className="bold-18">Rs {getTotalCartAmount()}</h4>
               </div>
             </div>
+            <Link to={'/checkout'}>
             <button className="btn-dark w-44 rounded-xl">Checkout</button>
+            </Link>
           </div>
           <div className="flex flex-col gap-10">
             <h4 className="bold-20 capitalize">Your coupon code enter here:</h4>

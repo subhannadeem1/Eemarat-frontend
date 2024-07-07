@@ -21,6 +21,7 @@ import ProjectDetails from "./pages/ProjectDetails";
 import MyProjects from "./pages/My-projects";
 import Proposals from "./pages/Proposals";
 import Booking from "./pages/Booking";
+import Checkout from "./pages/Checkout";
 export default function App() {
   return (
     <main className="text-tertiary">
@@ -46,6 +47,7 @@ export default function App() {
           <Route path="/cart-page" element={<Cart />} />
           <Route path="/login" element={<Login />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
         <Footer />
       </BrowserRouter>
