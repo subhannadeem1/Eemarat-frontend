@@ -20,6 +20,7 @@ import FindWork from "./pages/FindWork";
 import ProjectDetails from "./pages/ProjectDetails";
 import MyProjects from "./pages/My-projects";
 import Proposals from "./pages/Proposals";
+import Booking from "./pages/Booking";
 export default function App() {
   return (
     <main className="text-tertiary">
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/becomevendor" element={<BecomeVendor />} />
           <Route path="/cart-page" element={<Cart />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/booking" element={<Booking />} />
         </Routes>
         <Footer />
       </BrowserRouter>
