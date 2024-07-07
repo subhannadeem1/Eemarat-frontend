@@ -1,264 +1,240 @@
-import React, { useState, useRef } from "react";
-import Labour from "../images/labour.jpeg";
-import Mason from "../images/mason.jpeg";
-import Carpenter from "../images/carpentar.png";
-import Plumber from "../images/Plumbers.jpeg";
-import Welder from "../images/Welding.avif";
-import Electrition from "../images/electrician.jpeg";
-import BuildingVideo3 from "/videos/video3.mp4";
+import React, { useState } from "react";
+import { useLocation, Navigate } from "react-router-dom";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const Hireworker = () => {
-  const [selectedCity, setSelectedCity] = useState("");
-  const [showProducts, setShowProducts] = useState(false);
-  const productsSectionRef = useRef(null); // Reference to the products section this  useref use for scroll
+const Booking = () => {
+  const location = useLocation();
+  const worker = location.state?.worker;
 
-  const handleCityChange = (event) => {
-    setSelectedCity(event.target.value);
-    setShowProducts(false); // Reset product visibility when city changes
+  // Redirect or show an error if worker data is not passed
+  if (!worker) {
+    return (
+      <div>No worker data available. Please go back and select a worker.</div>
+    );
+  }
+
+  const [customerDetails, setCustomerDetails] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phoneNumber: "",
+    city: "",
+    specificArea: "",
+    address: "",
+    note: "",
+  });
+  const [numLaborers, setNumLaborers] = useState(1);
+  const [totalCost, setTotalCost] = useState(worker.cost);
+  const [areaOptions, setAreaOptions] = useState([]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setCustomerDetails({ ...customerDetails, [name]: value });
+  
+    if (name === 'city') {
+      if (value === 'Lahore') {
+        setAreaOptions(['Wapda Town','Green Town','Dha Rahbar','Model Town', 'Johar Town','Engineer Town', 'Eithad Town','Valancia', 'TownShip']);
+      } else if (value === 'Islamabad') {
+        setAreaOptions(['F-6', 'F-7', 'G-11']);
+      } else {
+        setAreaOptions([]);
+      }
+    }
+  };
+  
+
+  const handleNumLaborersChange = (e) => {
+    const num = parseInt(e.target.value, 10);
+    setNumLaborers(num);
+    setTotalCost(num * worker.cost);
   };
 
-  const handleShowProducts = () => {
-    if (selectedCity) {
-      setShowProducts(true);
-      setTimeout(() => {
-        // Scroll to the products section after state update and component re-render
-        productsSectionRef.current.scrollIntoView({ behavior: "smooth" });
-      }, 0);
-    } else {
-      alert("Please select a city first.");
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log("Submitting Form with:", customerDetails, numLaborers, totalCost);
+  
+    const CustomToast = () => (
+      <div>
+        Thanks for booking!<br/>
+        Your booking is completed.<br/>
+        We'll send a confirmation email shortly.
+      </div>
+    );
+  
+    toast.success(<CustomToast />, {
+      position: "top-center",
+      autoClose: 5000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+    });
+    setCustomerDetails({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phoneNumber: "",
+        city: "",
+        specificArea: "",
+        address: "",
+        note: "",
+      });
+    
+      setNumLaborers(1);  // Resets the number of laborers to 1
+      setTotalCost(worker.cost);  // Resets the total cost to the cost for one laborer
+    
   };
 
   return (
     <>
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-        <h1 className="text-3xl font-bold text-center mb-6">Hire worker</h1>
-        <br />
-        <div className="bg-white shadow-lg rounded-lg p-16 mt-10 flex flex-col md:flex-row items-center max-w-4xl w-full mx-4">
-          <div className="space-y-4 md:w-1/2">
-            <p className="text-lg text-[#005173] font-bold">
-              Get verified construction workers on your projects
-            </p>
-            <p>Access local construction workers in your area today!</p>
-            <select
-              className="border border-gray-300 rounded p-2 w-full"
-              onChange={handleCityChange}
-            >
-              <option value="">Select City</option>
-              <option value="Lahore">Lahore</option>
-              <option value="Islamabad">Islamabad</option>
-            </select>
-            <button
-              className=" bg-[#005F93] hover:bg-[#005173] text-white font-bold py-2 px-4 rounded w-full"
-              onClick={handleShowProducts}
-            >
-              General Labour
-            </button>
+    <ToastContainer />
+    <div className="flex justify-center items-center space-x-4 p-10">
+      <div className="flex-1">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <h2 className="text-2xl font-bold">Enter Your Details</h2>
+          <div className="flex flex-wrap -mx-2">
+            <div className="px-2 w-1/2">
+              <input
+                type="text"
+                name="firstName"
+                value={customerDetails.firstName}
+                onChange={handleInputChange}
+                placeholder="First Name"
+                className="border p-2 rounded-lg w-full mb-4"
+                required
+              />
+            </div>
+            <div className="px-2 w-1/2">
+              <input
+                type="text"
+                name="lastName"
+                value={customerDetails.lastName}
+                onChange={handleInputChange}
+                placeholder="Last Name"
+                className="border p-2 rounded-lg w-full mb-4"
+                required
+              />
+            </div>
           </div>
-          <div className="md:w-1/2 mt-6 md:mt-0 md:ml-6">
-            <video
-              className="h-full rounded-lg w-full object-cover"
-              autoPlay
-              loop
-              muted
+
+          <div className="flex flex-wrap -mx-2">
+            <div className="px-2 w-1/2">
+              <input
+                type="text"
+                name="email"
+                value={customerDetails.email}
+                onChange={handleInputChange}
+                placeholder="Email"
+                className="border p-2 rounded-lg w-full mb-4"
+                required
+              />
+            </div>
+            <div className="px-2 w-1/2">
+              <input
+                type="text"
+                name="phoneNumber"
+                value={customerDetails.phoneNumber}
+                onChange={handleInputChange}
+                placeholder="Phone Number"
+                className="border p-2 rounded-lg w-full mb-4"
+                required
+              />
+            </div>
+          </div>
+
+          <select
+  name="city"
+  value={customerDetails.city}
+  onChange={handleInputChange}
+  className="border p-2 rounded-lg w-full mb-4"
+  required
+>
+  <option value="" disabled>Select City</option>
+  <option value="Lahore">Lahore</option>
+  <option value="Islamabad">Islamabad</option>
+</select>
+
+{customerDetails.city && (
+  <select
+    name="specificArea"
+    value={customerDetails.specificArea}
+    onChange={handleInputChange}
+    className="border p-2 rounded-lg w-full mb-4"
+    required
+  >
+    <option value="" disabled>Select Area</option>
+    {areaOptions.map((area, index) => (
+      <option key={index} value={area}>{area}</option>
+    ))}
+  </select>
+)}
+
+          <input
+            type="text"
+            name="address"
+            value={customerDetails.address}
+            onChange={handleInputChange}
+            placeholder="Address"
+            className="border p-2 rounded-lg w-full mb-4"
+            required
+          />
+
+          <textarea
+            name="note"
+            value={customerDetails.note}
+            onChange={handleInputChange}
+            placeholder="Notes/Details"
+            className="border p-2 w-full mb-4"
+            rows="4"
+          ></textarea>
+
+          <button type="submit" className="mt-4 w-full bg-[#005F93] hover:bg-[#005173] text-white font-bold py-2 px-4 rounded-lg">
+            Submit Booking
+          </button>
+          
+        </form>
+      </div>
+      <div className="flex-1 ">
+        <div className="p-5 border bg-gray-100 rounded-lg">
+          <h2 className="text-2xl font-bold">Booking Details</h2>
+          <br />
+          <p className="mb-3">
+            <strong>Worker:</strong> {worker.title}
+          </p>
+          <div className="flex justify-between mt-4 font-bold">
+            <p className="mb-3">
+              <strong>Cost per Day:</strong>
+            </p>
+            <p> Rs.{worker.cost}</p>
+          </div>
+          <p className="space-x-4">
+            <strong>Number of Laborers:</strong>
+            <select
+              value={numLaborers}
+              onChange={handleNumLaborersChange}
+              className="ml-2 border p-1 w-20 rounded-lg"
             >
-              <source src={BuildingVideo3} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+              {Array.from({ length: 10 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  {i + 1}
+                </option>
+              ))}
+            </select>
+          </p>
+
+          <div className="flex justify-between mt-4 font-bold">
+            <p>
+              <strong>Total Cost:</strong>
+            </p>
+            <p> Rs.{totalCost}</p>
           </div>
         </div>
       </div>
-      <div className="text-center p-10">
-        <h1 className="font-bold text-4xl mb-4">Select City to find Worker</h1>
-        <h1 className="text-3xl">General Labour</h1>
-      </div>
-
-      {showProducts && (
-        <section
-          ref={productsSectionRef}
-          id="Projects"
-          className="w-fit mx-auto grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 justify-items-center justify-center gap-y-20 gap-x-14 mt-10 mb-5"
-        >
-          {/* <!--   ✅ worker card 1 - Starts Here 👇 --> */}
-          <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-            <a href="https://wa.me/+923496600825">
-              <img
-                src={Labour}
-                alt="Product"
-                class="h-80 w-72 object-cover rounded-t-xl"
-              />
-              <div class="px-4 py-3 w-72">
-                <p class="text-lg font-bold text-black truncate block capitalize">
-                  Labour
-                </p>
-                <span class="text-gray-400 mr-3 uppercase text-xs">
-                  Strong, reliable support for various tasks on site, ensuring
-                  smooth progress and safety.
-                </span>
-
-                <div class="flex items-center">
-                  <p class="text-lg font-semibold text-black cursor-auto my-3">
-                    Rs.1500
-                  </p>
-
-                  <p class="text-sm text-gray-600 cursor-auto ml-2">/day</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          {/* <!--   ✅ worker card 2 - Starts Here 👇 --> */}
-          <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-            <a href="https://wa.me/+923496600825">
-              <img
-                src={Mason}
-                alt="Product"
-                class="h-80 w-72 object-cover rounded-t-xl"
-              />
-              <div class="px-4 py-3 w-72">
-                <p class="text-lg font-bold text-black truncate block capitalize">
-                  Mason
-                </p>
-                <span class="text-gray-400 mr-3 uppercase text-xs">
-                  Expert in building structures using bricks, concrete blocks,
-                  or stone, skilled in mortar application and precision
-                  alignment.
-                </span>
-
-                <div class="flex items-center">
-                  <p class="text-lg font-semibold text-black cursor-auto my-3">
-                    Rs.4000
-                  </p>
-
-                  <p class="text-sm text-gray-600 cursor-auto ml-2">/day</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          {/* <!--   🛑 Worker card 2- Ends Here  -->
-        
-            <!--   ✅ Worker card 3 - Starts Here 👇 --> */}
-          <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-            <a href="https://wa.me/+923496600825">
-              <img
-                src={Carpenter}
-                alt="Product"
-                class="h-80 w-72 object-cover rounded-t-xl"
-              />
-              <div class="px-4 py-3 w-72">
-                <p class="text-lg font-bold text-black truncate block capitalize">
-                  Carpenter
-                </p>
-                <span class="text-gray-400 mr-3 uppercase text-xs">
-                  {" "}
-                  Skilled in crafting, installing, and repairing wooden
-                  structures, from framing to intricate finishing work.
-                </span>
-
-                <div class="flex items-center">
-                  <p class="text-lg font-semibold text-black cursor-auto my-3">
-                    Rs.800
-                  </p>
-
-                  <p class="text-sm text-gray-600 cursor-auto ml-2">/sqft</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          {/* <!--   🛑 Worker card 3 - Ends Here  -->
-        
-            <!--   ✅ Worker card 4 - Starts Here 👇 --> */}
-          <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-            <a href="https://wa.me/+923496600825">
-              <img
-                src={Electrition}
-                alt="Product"
-                class="h-80 w-72 object-cover rounded-t-xl"
-              />
-              <div class="px-4 py-3 w-72">
-                <p class="text-lg font-bold text-black truncate block capitalize">
-                  Electrician
-                </p>
-                <span class="text-gray-400 mr-3 uppercase text-xs">
-                  Proficient in wiring, installation, and maintenance of
-                  electrical systems, ensuring safety and functionality on
-                  construction sites.
-                </span>
-
-                <div class="flex items-center">
-                  <p class="text-lg font-semibold text-black cursor-auto my-3">
-                    Rs.700
-                  </p>
-
-                  <p class="text-sm text-gray-600 cursor-auto ml-2">/day</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          {/* <!--   🛑 Worker card 4 - Ends Here  -->
-        
-            <!--   ✅ Worker card 5 - Starts Here 👇 --> */}
-          <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-            <a href="https://wa.me/+923496600825">
-              <img
-                src={Plumber}
-                alt="Product"
-                class="h-80 w-72 object-cover rounded-t-xl"
-              />
-              <div class="px-4 py-3 w-72">
-                <p class="text-lg font-bold text-black truncate block capitalize">
-                  Plumber
-                </p>
-                <span class="text-gray-400 mr-3 uppercase text-xs">
-                  Specialized in installing and repairing piping systems,
-                  fixtures, and appliances to facilitate water supply and
-                  drainage in buildings.
-                </span>
-
-                <div class="flex items-center">
-                  <p class="text-lg font-semibold text-black cursor-auto my-3">
-                    Rs.700
-                  </p>
-
-                  <p class="text-sm text-gray-600 cursor-auto ml-2">/day</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          {/* <!--   🛑 Worker card 5 - Ends Here  -->
-        
-            <!--   ✅ Worker card 6 - Starts Here 👇 --> */}
-          <div class="w-72 bg-white shadow-md rounded-xl duration-500 hover:scale-105 hover:shadow-xl">
-            <a href="https://wa.me/+923496600825">
-              <img
-                src={Welder}
-                alt="Product"
-                class="h-80 w-72 object-cover rounded-t-xl"
-              />
-              <div class="px-4 py-3 w-72">
-                <p class="text-lg font-bold text-black truncate block capitalize">
-                  Welder
-                </p>
-                <span class="text-gray-400 mr-3 uppercase text-xs">
-                  Proficient in joining metal parts using various welding
-                  techniques, ensuring structural integrity and adherence to
-                  project specifications.
-                </span>
-
-                <div class="flex items-center">
-                  <p class="text-lg font-semibold text-black cursor-auto my-3">
-                    Rs.700
-                  </p>
-
-                  <p class="text-sm text-gray-600 cursor-auto ml-2">/day</p>
-                </div>
-              </div>
-            </a>
-          </div>
-          {/* <!--   🛑 Worker card 6 - Ends Here  --> */}
-        </section>
-      )}
+    </div>
     </>
   );
 };
 
-export default Hireworker;
+export default Booking;
