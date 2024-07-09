@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useLocation, Navigate } from "react-router-dom";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
+import { backend_url } from "../context/ShopContext";
 const Booking = () => {
   const location = useLocation();
   const worker = location.state?.worker;
@@ -50,42 +50,78 @@ const Booking = () => {
     setTotalCost(num * worker.cost);
   };
 
-  const handleSubmit = (e) => {
+  
+  
+  const handleSubmit = async (e) => {
     e.preventDefault();
     console.log("Submitting Form with:", customerDetails, numLaborers, totalCost);
   
-    const CustomToast = () => (
-      <div>
-        Thanks for booking!<br/>
-        Your booking is completed.<br/>
-        We'll send a confirmation email shortly.
-      </div>
-    );
-  
-    toast.success(<CustomToast />, {
-      position: "top-center",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-    });
-    setCustomerDetails({
-        firstName: "",
-        lastName: "",
-        email: "",
-        phoneNumber: "",
-        city: "",
-        specificArea: "",
-        address: "",
-        note: "",
+    try {
+      const response = await fetch(backend_url + "/bookWorker", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          workerId: worker.id,
+          workerTitle: worker.title,
+          workerCost: worker.cost,
+          city: customerDetails.city,
+          bookingDetails: {
+            clientName: `${customerDetails.firstName} ${customerDetails.lastName}`,
+            
+            clientContact: customerDetails.phoneNumber,
+            date: new Date(),  // assuming the current date for simplicity
+            totalCost: totalCost,
+            numLaborers: numLaborers,
+          }
+        })
       });
-    
-      setNumLaborers(1);  // Resets the number of laborers to 1
-      setTotalCost(worker.cost);  // Resets the total cost to the cost for one laborer
-    
+  
+      const result = await response.json();
+  
+      if (result.success) {
+        const CustomToast = () => (
+          <div>
+            Thanks for booking!<br/>
+            Your booking is completed.<br/>
+            We'll send a confirmation email shortly.
+          </div>
+        );
+  
+        toast.success(<CustomToast />, {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+  
+        setCustomerDetails({
+          firstName: "",
+          lastName: "",
+          email: "",
+          phoneNumber: "",
+          city: "",
+          specificArea: "",
+          address: "",
+          note: "",
+        });
+  
+        setNumLaborers(1);
+        setTotalCost(worker.cost);
+      } else {
+        throw new Error(result.message);
+      }
+    } catch (error) {
+      console.error('Failed to book worker:', error);
+      toast.error('Failed to book worker. Please try again.');
+    }
   };
+  
+  
 
   return (
     <>
