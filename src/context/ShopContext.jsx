@@ -70,7 +70,10 @@ const ShopContextProvider = (props) => {
         .then((data) => console.log(data));
     }
   };
-
+  const resetCart = () => {
+    setCartItems(getDefaultCart());
+  };
+  
   const getTotalCartAmount = () => {
     let totalAmount = 0;
     for (const item in cartItems) {
@@ -112,3 +115,4 @@ const ShopContextProvider = (props) => {
 };
 
 export default ShopContextProvider;
+
